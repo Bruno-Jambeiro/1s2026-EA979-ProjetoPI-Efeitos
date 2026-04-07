@@ -3,6 +3,28 @@ import numpy as np
 #Arquivo com o effeito difference of Gaussians
 from . import anisotropic_filters, colorspaces
 
+def difference_of_gaussians_color(img_raw: np.ndarray, sigma_c, sigma_e, sigma_m, sigma_a, p, phi, epsilon) -> np.ndarray:
+    mask = difference_of_gaussians(img_raw, sigma_c, sigma_e, sigma_m, sigma_a, p, phi, epsilon)
+    img = colorspaces.to_float(img_raw)
+    mask_float = colorspaces.to_float(mask)
+
+    # Extract perceptual luminance from the DoG mask via Oklab
+    mask_lab = colorspaces.rgb_to_oklab(mask_float)
+    L = mask_lab[..., 0]  # L channel in [0, 1]
+
+    # Two-segment interpolation driven by the DoG luminance:
+    #   L in [0.0, 0.5]: black (0,0,0) -> original color
+    #   L in [0.5, 1.0]: original color -> white (1,1,1)
+    t = L[..., None]  # add channel dim for broadcasting with (H, W, 3)
+
+    img_color = np.where(
+        t <= 0.5,
+        img * (t / 0.5),                        # lerp: black -> original
+        img + (1.0 - img) * ((t - 0.5) / 0.5)  # lerp: original -> white
+    )
+
+    return colorspaces.to_uint8(np.clip(img_color, 0.0, 1.0))
+
 def difference_of_gaussians(img_raw: np.ndarray, sigma_c, sigma_e, sigma_m, sigma_a, p, phi, epsilon) -> np.ndarray:
     if not 0.0 <= epsilon <= 1.0:
         raise ValueError("epsilon must be a quantile in the range [0, 1]")

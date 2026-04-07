@@ -2,7 +2,7 @@ import numpy as np
 
 from unicamp_effects.registry import register
 from .imports.dithering_pallet import dithering_pallet
-from .imports.dg import difference_of_gaussians
+from .imports.dg import difference_of_gaussians, difference_of_gaussians_color
 
 @register(prefix="260382")
 def effect_identity(img: np.ndarray) -> np.ndarray:
@@ -36,6 +36,13 @@ def difference_of_gaussians_flow(img: np.ndarray) -> np.ndarray:
 def difference_of_gaussians_flow_less(img: np.ndarray) -> np.ndarray:
     return difference_of_gaussians(img, 1.0, 0.8, 3.2, 0.75, 120, 1.83, 0.9, )
 
+@register(prefix="260382")
+def difference_of_gaussians_flow_color(img: np.ndarray) -> np.ndarray:
+    return difference_of_gaussians_color(img, 5.84, 0.8, 3.2, 0.75, 120, 1.83, 0.95, )
+
+@register(prefix="260382")
+def difference_of_gaussians_flow_less_color(img: np.ndarray) -> np.ndarray:
+    return difference_of_gaussians_color(img, 1.0, 0.8, 3.2, 0.75, 120, 1.83, 0.9, )
 
 
 
