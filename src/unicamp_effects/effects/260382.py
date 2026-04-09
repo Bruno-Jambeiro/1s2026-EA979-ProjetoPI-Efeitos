@@ -3,7 +3,7 @@ import numpy as np
 from unicamp_effects.registry import register
 from .imports.dithering_pallet import dithering_pallet
 from .imports.dg import difference_of_gaussians, difference_of_gaussians_color
-
+from .imports.Kuwahara import kuwahara_filter, kuwahara_square_filter
 @register(prefix="260382")
 def effect_identity(img: np.ndarray) -> np.ndarray:
     return img
@@ -44,7 +44,13 @@ def difference_of_gaussians_flow_color(img: np.ndarray) -> np.ndarray:
 def difference_of_gaussians_flow_less_color(img: np.ndarray) -> np.ndarray:
     return difference_of_gaussians_color(img, 1.0, 0.8, 3.2, 0.75, 120, 1.83, 0.87, )
 
+@register(prefix="260382")
+def kuwahara(img: np.ndarray) -> np.ndarray:
+    return kuwahara_filter(img, 21)
 
+@register(prefix="260382")
+def difference_of_gaussians_lower_frequency_color(img: np.ndarray) -> np.ndarray:
+    return difference_of_gaussians_color(img, 1.0, 0.8, 3.2, 0.75, 50, 1.83, 0.87, )
 
 
 
